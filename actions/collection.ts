@@ -14,12 +14,26 @@ export async function createCollection(form: createCollectionSchemaType) {
 
   await wait(1000);
 
-
   return await prisma.collection.create({
     data: {
       userId: user.id,
       color: form.color,
       name: form.name,
+    },
+  });
+}
+
+export async function delectCollection(id: number) {
+  const user = await currentUser();
+
+  if (!user) {
+    throw new Error("user not found");
+  }
+
+  await wait(2000);
+  return await prisma.collection.delete({
+    where: {
+      id: id,
     },
   });
 }

@@ -1,4 +1,5 @@
 import SadFace from "@/components/icons/SadFace";
+import CollectionCard from "@/components/shared/CollectionCard/CollectionCard";
 import CreateCollectionBtn from "@/components/shared/CreateCollectionBtn/CreateCollectionBtn";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,9 +29,7 @@ async function WelcomeMsg() {
   }
   return (
     <div className="flex w-full mb-12">
-      <h1 className="text-4xl font-bold">
-        Welcome, <br /> {user.firstName}
-      </h1>
+      <h1 className="text-4xl font-bold">Welcome {user.firstName}!</h1>
     </div>
   );
 }
@@ -39,8 +38,7 @@ function WelcomeMsgFallback() {
   return (
     <div className="flex w-full mb-12">
       <div className="text-4xl font-bold space-y-3">
-        <Skeleton className="w-[150px] h-[36px]" />
-        <Skeleton className="w-[150px] h-[36px]" />
+        <Skeleton className="w-[350px] h-[36px]" />
       </div>
     </div>
   );
@@ -49,6 +47,9 @@ function WelcomeMsgFallback() {
 async function CollectionList() {
   const user = await currentUser();
   const collections = await prisma.collection.findMany({
+    include: {
+      tasks: true,
+    },
     where: {
       userId: user?.id,
     },
@@ -70,9 +71,13 @@ async function CollectionList() {
   }
 
   return (
-    <div>
-      Collections: {collections.length}
+    <>
       <CreateCollectionBtn />
-    </div>
+      <div className="flex flex-col gap-4 mt-6">
+        {collections?.map((collection) => (
+          <CollectionCard key={collection.id} collection={collection} />
+        ))}
+      </div>
+    </>
   );
 }
